@@ -27,9 +27,13 @@ class SecureCallbackMixin extends Mixin
     });
     
     SecureCallback::add_function('expire', function($sc) {
-      if(!$sc->expires_at) return;
       $sc->used_at = time();
-      $sc->save();
+      $config = W::module('sc');
+      if(!$config['is_test_mode']) $sc->save();
+      if(!$sc->is_valid)
+      {
+        W::error("Failed to expire secure callback {$sc->id}", $sc->errors);
+      }
     });    
   }
   
